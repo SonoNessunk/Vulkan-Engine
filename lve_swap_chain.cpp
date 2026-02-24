@@ -1,6 +1,5 @@
 #include "lve_swap_chain.hpp"
 
-// std
 #include <array>
 #include <cstdlib>
 #include <cstring>

@@ -1,11 +1,10 @@
 #include "lve_pipeline.hpp"
-
+#include "lve_device.hpp"
+#include "lve_model.hpp"
 #include <cassert>
-#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <vulkan/vulkan_core.h>
 
 namespace lve {
 
@@ -70,13 +69,15 @@ void LvePipeline::createGraphicsPipeline(const std::string &vertFilepath, const 
     shaderStages[1].pNext = nullptr;
     shaderStages[1].pSpecializationInfo = nullptr;
 
+    auto bindingDescritpions = LveModel::Vertex::getBindingDescriptions();
+    auto attributeDescritpions = LveModel::Vertex::getAttributeDescriptions();
+
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = nullptr;
-    vertexInputInfo.pVertexBindingDescriptions = nullptr;
-
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescritpions.size());
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescritpions.size());
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescritpions.data();
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescritpions.data();
 
     VkPipelineViewportStateCreateInfo viewportInfo{};
 

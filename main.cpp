@@ -1,11 +1,9 @@
-#include "first_app.hpp"
-
-#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
-int main() {
+#include "first_app.hpp"
 
+int main() {
     lve::FirstApp app{};
 
     try {

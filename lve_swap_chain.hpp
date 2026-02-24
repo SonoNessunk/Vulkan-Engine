@@ -2,12 +2,9 @@
 
 #include "lve_device.hpp"
 
-// vulkan headers
-#include <vulkan/vulkan.h>
-
-// std lib headers
 #include <string>
 #include <vector>
+#include <vulkan/vulkan.h>
 
 namespace lve {
 
