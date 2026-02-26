@@ -2,7 +2,6 @@
 
 #include "lve_device.hpp"
 #include <vector>
-#include <vulkan/vulkan_core.h>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -12,6 +11,8 @@ class LveModel {
   public:
     struct Vertex {
         glm::vec2 position;
+        glm::vec3 color;
+
         static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
         static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
     };
@@ -27,6 +28,7 @@ class LveModel {
 
   private:
     void createVertexBuffers(const std::vector<Vertex> &verticies);
+    
     LveDevice &lveDevice;
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
