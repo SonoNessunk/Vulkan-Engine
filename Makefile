@@ -8,7 +8,7 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-TARGET = VulkanTest
+TARGET = VulkanEngine
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): *.cpp *.hpp
 	g++ $(CFLAGS) -o $(TARGET) *.cpp $(LDFLAGS)
@@ -19,9 +19,9 @@ $(TARGET): *.cpp *.hpp
 
 .PHONY: test clean
 
-test: VulkanTest
-	./VulkanTest
+test: VulkanEngine
+	./VulkanEngine
 
 clean:
-	rm -f VulkanTest
+	rm -f VulkanEngine
 	rm -f ./shaders/*.spv
