@@ -2,7 +2,6 @@
 
 #include "lve_window.hpp"
 
-// std lib headers
 #include <string>
 #include <vector>
 
@@ -67,7 +66,6 @@ class LveDevice {
     VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling,
                                  VkFormatFeatureFlags features);
 
-    // Buffer Helper Functions
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer,
                       VkDeviceMemory &bufferMemory);
     VkCommandBuffer beginSingleTimeCommands();
@@ -88,7 +86,6 @@ class LveDevice {
     void createLogicalDevice();
     void createCommandPool();
 
-    // helper functions
     bool isDeviceSuitable(VkPhysicalDevice device);
     std::vector<const char *> getRequiredExtensions();
     bool checkValidationLayerSupport();

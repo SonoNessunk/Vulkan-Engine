@@ -47,8 +47,8 @@ void LvePipeline::createGraphicsPipeline(const std::string &vertFilepath, const 
     auto vertCode = readFile(vertFilepath);
     auto fragCode = readFile(fragFilepath);
 
-    // std::cout << "Vertex Shader Code Size: " << vertCode.size() << std::endl;
-    // std::cout << "Fragment Shader Code Size: " << fragCode.size() << std::endl;
+    std::cout << "Vertex Shader Code Size: " << vertCode.size() << std::endl;
+    std::cout << "Fragment Shader Code Size: " << fragCode.size() << std::endl;
 
     createShaderModule(vertCode, &vertShaderModule);
     createShaderModule(fragCode, &fragShaderModule);

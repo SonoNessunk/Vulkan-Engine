@@ -1,6 +1,5 @@
 #include "lve_device.hpp"
 
-// std headers
 #include <cstring>
 #include <iostream>
 #include <set>
@@ -8,7 +7,6 @@
 
 namespace lve {
 
-// local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                     VkDebugUtilsMessageTypeFlagsEXT messageType,
                                                     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
@@ -37,7 +35,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-// class member functions
 LveDevice::LveDevice(LveWindow &window) : window{window} {
     createInstance();
     setupDebugMessenger();
@@ -153,8 +150,6 @@ void LveDevice::createLogicalDevice() {
     createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
     createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-    // might not really be necessary anymore because device specific validation layers
-    // have been deprecated
     if (enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -214,7 +209,7 @@ void LveDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfo
                              VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                              VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     createInfo.pfnUserCallback = debugCallback;
-    createInfo.pUserData = nullptr; // Optional
+    createInfo.pUserData = nullptr;
 }
 
 void LveDevice::setupDebugMessenger() {
@@ -448,8 +443,8 @@ void LveDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize 
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     VkBufferCopy copyRegion{};
-    copyRegion.srcOffset = 0; // Optional
-    copyRegion.dstOffset = 0; // Optional
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
