@@ -1,6 +1,7 @@
-CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK_PATH)/include
+include .env
+
+CFLAGS = -std=c++17 -I. -I$(VULKAN_SDK_PATH)/include -I$(TINYOBJ_PATH)
 LDFLAGS = -L$(VULKAN_SDK_PATH)/lib `pkg-config --static --libs glfw3` -lvulkan
-GLSLC = /usr/bin/glslc
 
 # create list of all spv files and set as dependency
 vertSources = $(shell find ./shaders -type f -name "*.vert")
@@ -8,7 +9,7 @@ vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSources))
 fragSources = $(shell find ./shaders -type f -name "*.frag")
 fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSources))
 
-TARGET = VulkanEngine
+TARGET = VulkanEngine.out
 $(TARGET): $(vertObjFiles) $(fragObjFiles)
 $(TARGET): *.cpp *.hpp
 	g++ $(CFLAGS) -o $(TARGET) *.cpp $(LDFLAGS)
@@ -19,9 +20,9 @@ $(TARGET): *.cpp *.hpp
 
 .PHONY: test clean
 
-test: VulkanEngine
-	./VulkanEngine
+test: VulkanEngine.out
+	./VulkanEngine.out
 
 clean:
-	rm -f VulkanEngine
+	rm -f VulkanEngine.out
 	rm -f ./shaders/*.spv
