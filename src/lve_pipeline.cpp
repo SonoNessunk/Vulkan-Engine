@@ -1,9 +1,15 @@
 #include "lve_pipeline.hpp"
+
 #include "lve_model.hpp"
+
 #include <cassert>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
 
 namespace lve {
 
@@ -19,11 +25,12 @@ LvePipeline::~LvePipeline() {
     vkDestroyPipeline(lveDevice.device(), graphicsPipeline, nullptr);
 }
 
-std::vector<char> LvePipeline::readFile(const std::string &filePath) {
-    std::ifstream file{filePath, std::ios::ate | std::ios::binary};
+std::vector<char> LvePipeline::readFile(const std::string &filepath) {
+    std::string enginePath = ENGINE_DIR + filepath;
+    std::ifstream file{enginePath, std::ios::ate | std::ios::binary};
 
     if (!file.is_open()) {
-        throw std::runtime_error("faile to open file: " + filePath);
+        throw std::runtime_error("failed to open file: " + enginePath);
     }
 
     size_t fileSize = static_cast<size_t>(file.tellg());
@@ -38,17 +45,13 @@ std::vector<char> LvePipeline::readFile(const std::string &filePath) {
 
 void LvePipeline::createGraphicsPipeline(const std::string &vertFilepath, const std::string &fragFilepath,
                                          const PipelineConfigInfo &configInfo) {
-
     assert(configInfo.pipelineLayout != VK_NULL_HANDLE &&
-           "Cannot create graphics pipeline:: no pipelineLayout provided in configInfo");
+           "Cannot create graphics pipeline: no pipelineLayout provided in configInfo");
     assert(configInfo.renderPass != VK_NULL_HANDLE &&
-           "Cannot create graphics pipeline:: no renderPass provided in configInfo");
+           "Cannot create graphics pipeline: no renderPass provided in configInfo");
 
     auto vertCode = readFile(vertFilepath);
     auto fragCode = readFile(fragFilepath);
-
-    std::cout << "Vertex Shader Code Size: " << vertCode.size() << std::endl;
-    std::cout << "Fragment Shader Code Size: " << fragCode.size() << std::endl;
 
     createShaderModule(vertCode, &vertShaderModule);
     createShaderModule(fragCode, &fragShaderModule);
@@ -69,15 +72,14 @@ void LvePipeline::createGraphicsPipeline(const std::string &vertFilepath, const 
     shaderStages[1].pNext = nullptr;
     shaderStages[1].pSpecializationInfo = nullptr;
 
-    auto bindingDescritpions = LveModel::Vertex::getBindingDescriptions();
-    auto attributeDescritpions = LveModel::Vertex::getAttributeDescriptions();
-
+    auto bindingDescriptions = LveModel::Vertex::getBindingDescriptions();
+    auto attributeDescriptions = LveModel::Vertex::getAttributeDescriptions();
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescritpions.size());
-    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescritpions.size());
-    vertexInputInfo.pVertexBindingDescriptions = bindingDescritpions.data();
-    vertexInputInfo.pVertexAttributeDescriptions = attributeDescritpions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -121,7 +123,6 @@ void LvePipeline::bind(VkCommandBuffer commandBuffer) {
 }
 
 void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo) {
-
     configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
