@@ -6,27 +6,17 @@
 #include "systems/point_light_system.hpp"
 #include "systems/simple_render_system.hpp"
 
-// libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
-// std
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <stdexcept>
 
 namespace lve {
-
-struct GlobalUbo {
-    glm::mat4 projection{1.f};
-    glm::mat4 view{1.f};
-    glm::vec4 ambientLightColor{1.f, 1.f, 1.f, .02f}; // w is intensity
-    glm::vec3 lightPosition{-1.f};
-    alignas(16) glm::vec4 lightColor{1.f}; // w is light intensity
-};
 
 FirstApp::FirstApp() {
     globalPool = LveDescriptorPool::Builder(lveDevice)
@@ -79,7 +69,8 @@ void FirstApp::run() {
         camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
         float aspect = lveRenderer.getAspectRatio();
-        camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+        // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 100);
+        camera.setPerspectiveProjection(glm::radians(70.f), aspect, 0.1f, 100.f);
 
         if (auto commandBuffer = lveRenderer.beginFrame()) {
             int frameIndex = lveRenderer.getFrameIndex();
@@ -90,6 +81,7 @@ void FirstApp::run() {
             GlobalUbo ubo{};
             ubo.projection = camera.getProjection();
             ubo.view = camera.getView();
+            pointLightSystem.update(frameInfo, ubo);
             uboBuffers[frameIndex]->writeToBuffer(&ubo);
             uboBuffers[frameIndex]->flush();
 
@@ -126,6 +118,19 @@ void FirstApp::loadGameObjects() {
     floor.transform.translation = {0.f, .5f, 0.f};
     floor.transform.scale = {3.f, 1.f, 3.f};
     gameObjects.emplace(floor.getId(), std::move(floor));
+
+    std::vector<glm::vec3> lightColors{
+        {1.f, .1f, .1f}, {.1f, .1f, 1.f}, {.1f, 1.f, .1f}, {1.f, 1.f, .1f}, {.1f, 1.f, 1.f}, {1.f, 1.f, 1.f} //
+    };
+
+    for (int i = 0; i < lightColors.size(); i++) {
+        auto pointLight = LveGameObject::makePointLight(0.2f);
+        pointLight.color = lightColors[i];
+        auto rotateLight =
+            glm::rotate(glm::mat4(1.f), (i * glm::two_pi<float>()) / lightColors.size(), {0.f, -1.f, 0.f});
+        pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+        gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+    }
 }
 
 } // namespace lve

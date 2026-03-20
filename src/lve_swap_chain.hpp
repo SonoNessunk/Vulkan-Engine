@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace lve {
