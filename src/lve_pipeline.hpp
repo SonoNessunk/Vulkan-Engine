@@ -1,16 +1,18 @@
 #pragma once
 
 #include "lve_device.hpp"
+
 #include <string>
 #include <vector>
+
 namespace lve {
 
 struct PipelineConfigInfo {
-
-    PipelineConfigInfo() = default;
     PipelineConfigInfo(const PipelineConfigInfo &) = delete;
     PipelineConfigInfo &operator=(const PipelineConfigInfo &) = delete;
 
+    std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
+    std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
     VkPipelineViewportStateCreateInfo viewportInfo;
     VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
     VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -24,6 +26,7 @@ struct PipelineConfigInfo {
     VkRenderPass renderPass = nullptr;
     uint32_t subpass = 0;
 };
+
 class LvePipeline {
   public:
     LvePipeline(LveDevice &device, const std::string &vertFilepath, const std::string &fragFilepath,
